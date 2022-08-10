@@ -1,23 +1,39 @@
-import logo from './logo.svg';
 import './App.css';
+import { useEffect } from 'react';
+import {
+  selectIsConnectedToRoom,
+  useHMSActions,
+  useHMSStore
+} from "@100mslive/react-sdk";
+import SignIn from './components/signin.tsx';
+import Conference from './components/confrence.tsx';
+import Footer from './components/footer.tsx';
+import Agenda from './components/agenda.tsx';
 
 function App() {
+  const isConnected = useHMSStore(selectIsConnectedToRoom);
+  const hmsActions = useHMSActions();
+
+  
+  useEffect(() => {
+    window.onunload = () => {
+        if(isConnected) {
+          hmsActions.leave();
+        }
+      }
+    }, [hmsActions, isConnected]);
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+          {isConnected ? (
+            <>
+              <Conference />
+              <Footer/>
+            </>
+
+            ):(
+              <SignIn />
+          )}
     </div>
   );
 }
